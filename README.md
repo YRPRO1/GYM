@@ -3,45 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Workout Calendar</title>
+    <title>Workout Calendar</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
             background-color: #f4f4f9;
             margin: 0;
             padding: 0;
         }
+
         .calendar-container {
             margin: 20px auto;
-            max-width: 900px;
+            max-width: 1000px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .month-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
             background-color: #4CAF50;
             color: white;
-            padding: 15px;
-            font-size: 1.5em;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .month-header button {
             background: none;
             border: none;
             color: white;
-            font-size: 1.2em;
+            font-size: 1.5em;
             cursor: pointer;
         }
+
         .month-header button:hover {
             text-decoration: underline;
         }
+
+        .month-title {
+            font-size: 1.8em;
+        }
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             margin-top: 20px;
         }
+
         .day {
             position: relative;
             padding: 10px;
@@ -50,53 +65,48 @@
             background-color: #ffffff;
             text-align: left;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .day:hover {
+            background-color: #f9f9f9;
             cursor: pointer;
         }
-        .day:hover {
-            background-color: #f0f0f0;
-        }
+
         .day.completed {
             background-color: #4CAF50;
             color: white;
         }
+
         .day.completed:hover {
             background-color: #45a049;
         }
+
         .day .date {
             font-weight: bold;
             font-size: 1.2em;
             margin-bottom: 5px;
         }
+
         .day textarea {
             width: 100%;
-            height: 70px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            height: 60px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 0.9em;
             padding: 5px;
             resize: none;
         }
+
         .day textarea:focus {
             outline: none;
             border-color: #4CAF50;
         }
-        .buttons {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .buttons button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-        }
-        .buttons button:hover {
-            background-color: #45a049;
+
+        .instructions {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.1em;
         }
     </style>
 </head>
@@ -107,6 +117,7 @@
             <div id="month-title"></div>
             <button id="next-month">▶</button>
         </div>
+        <div class="instructions">Click a day to add notes or mark it as completed. Use the arrows to navigate months.</div>
         <div class="calendar" id="calendar"></div>
     </div>
 
@@ -135,17 +146,24 @@
             }
 
             // Generate days
-            let dayIndex = new Date(year, month, 18).getDay(); // Align split starting on Nov 18
+            let workoutIndex = month === 10 && year === 2024 ? 0 : null; // Start workout split only from Nov 18
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("day");
                 dayDiv.dataset.date = dateKey;
 
+                // Workout starts from November 18
+                if (year === 2024 && month === 10 && day >= 18) {
+                    workoutIndex = workoutIndex === null ? 0 : workoutIndex; // Start split from "Push"
+                } else if (workoutIndex !== null) {
+                    workoutIndex++;
+                }
+
                 // Header with date and workout split
                 const dateDiv = document.createElement("div");
                 dateDiv.classList.add("date");
-                const workoutName = day >= 18 || month > 10 ? workoutSplit[dayIndex % workoutSplit.length] : '';
+                const workoutName = workoutIndex !== null ? workoutSplit[workoutIndex % workoutSplit.length] : '';
                 dateDiv.textContent = `${day} ${workoutName ? '- ' + workoutName : ''}`;
                 dayDiv.appendChild(dateDiv);
 
@@ -171,8 +189,6 @@
                 if (workouts[dateKey]?.completed) {
                     dayDiv.classList.add("completed");
                 }
-
-                if (day >= 18 || month > 10) dayIndex++; // Start workout split from Nov 18
 
                 calendar.appendChild(dayDiv);
             }
