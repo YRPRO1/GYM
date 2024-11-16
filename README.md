@@ -11,33 +11,42 @@
             padding: 0;
             background-color: #f4f4f9;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
+            max-width: 90%;
+            width: 100%;
+            height: 90%;
+            background: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 10px 10px 0 0;
         }
 
         .header h1 {
-            font-size: 2em;
-            color: #4CAF50;
+            font-size: 1.5em;
+            margin: 0;
         }
 
         .day-view, .month-view {
-            display: none;
-        }
-
-        .day-view.active, .month-view.active {
-            display: block;
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .day-details {
@@ -46,7 +55,7 @@
         }
 
         .day-details h2 {
-            font-size: 1.8em;
+            font-size: 1.5em;
             margin-bottom: 10px;
         }
 
@@ -57,13 +66,13 @@
 
         .day-log textarea {
             width: 100%;
-            height: 150px;
+            height: 200px;
             font-size: 1em;
             padding: 10px;
-            margin-top: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             resize: none;
+            box-sizing: border-box;
         }
 
         .day-log textarea:focus {
@@ -74,7 +83,7 @@
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
+            margin-top: 20px;
         }
 
         .navigation-buttons button {
@@ -93,21 +102,23 @@
 
         .view-toggle {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 0 0 10px 10px;
         }
 
         .view-toggle button {
             padding: 10px 20px;
             border: none;
-            background-color: #007BFF;
+            background-color: transparent;
             color: white;
             font-size: 1em;
-            border-radius: 5px;
             cursor: pointer;
         }
 
         .view-toggle button:hover {
-            background-color: #0056b3;
+            text-decoration: underline;
         }
 
         .month-view .calendar {
@@ -143,7 +154,7 @@
             <h1>Workout Tracker</h1>
         </div>
 
-        <div class="day-view active" id="day-view">
+        <div class="day-view" id="day-view">
             <div class="day-details">
                 <h2 id="day-title"></h2>
                 <p id="workout-type"></p>
@@ -239,15 +250,15 @@
         }
 
         function toggleView() {
-            if (dayView.classList.contains("active")) {
-                dayView.classList.remove("active");
-                monthView.classList.add("active");
+            if (dayView.style.display === "none") {
+                dayView.style.display = "block";
+                monthView.style.display = "none";
+                toggleViewButton.textContent = "Switch to Month View";
+            } else {
+                dayView.style.display = "none";
+                monthView.style.display = "block";
                 toggleViewButton.textContent = "Switch to Day View";
                 updateMonthView();
-            } else {
-                dayView.classList.add("active");
-                monthView.classList.remove("active");
-                toggleViewButton.textContent = "Switch to Month View";
             }
         }
 
