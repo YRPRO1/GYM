@@ -11,63 +11,55 @@
             padding: 0;
             background-color: #f4f4f9;
             color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
         }
 
         .container {
-            max-width: 90%;
-            width: 100%;
-            height: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
         }
 
         .header {
             text-align: center;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
             border-radius: 10px 10px 0 0;
         }
 
         .header h1 {
-            font-size: 1.5em;
+            font-size: 2em;
             margin: 0;
         }
 
-        .day-view, .month-view {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+        .day-view {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .day-details {
             text-align: center;
-            margin-bottom: 20px;
         }
 
         .day-details h2 {
-            font-size: 1.5em;
+            font-size: 1.8em;
             margin-bottom: 10px;
         }
 
         .day-details p {
-            font-size: 1.2em;
+            font-size: 1.3em;
             color: #555;
         }
 
         .day-log textarea {
             width: 100%;
-            height: 200px;
-            font-size: 1em;
+            height: 300px;
+            font-size: 1.1em;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -87,11 +79,11 @@
         }
 
         .navigation-buttons button {
-            padding: 10px 20px;
+            padding: 15px 25px;
             border: none;
             background-color: #4CAF50;
             color: white;
-            font-size: 1em;
+            font-size: 1.2em;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -102,23 +94,25 @@
 
         .view-toggle {
             text-align: center;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 0 0 10px 10px;
+            margin-top: 20px;
         }
 
         .view-toggle button {
-            padding: 10px 20px;
+            padding: 15px 25px;
             border: none;
-            background-color: transparent;
+            background-color: #007BFF;
             color: white;
-            font-size: 1em;
+            font-size: 1.2em;
+            border-radius: 5px;
             cursor: pointer;
         }
 
         .view-toggle button:hover {
-            text-decoration: underline;
+            background-color: #0056b3;
+        }
+
+        .month-view {
+            display: none;
         }
 
         .month-view .calendar {
@@ -129,7 +123,7 @@
         }
 
         .month-view .calendar .day {
-            padding: 10px;
+            padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #ffffff;
@@ -145,6 +139,18 @@
         .month-view .calendar .day.completed {
             background-color: #4CAF50;
             color: white;
+        }
+
+        @media (max-width: 600px) {
+            .day-log textarea {
+                height: 200px;
+            }
+
+            .navigation-buttons button,
+            .view-toggle button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -178,16 +184,11 @@
     </div>
 
     <script>
-        // Constants
         const workoutSplit = ["Push", "Pull", "Legs", "Cardio and Abs", "Upperbody", "Rest", "Rest"];
-        const startDate = new Date(2024, 10, 18); // November 18, 2024
-        const endDate = new Date(2026, 10, 17); // 2 years later
-
-        // State
+        const startDate = new Date(2024, 10, 18);
         let currentDate = startDate;
         let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
 
-        // Elements
         const dayView = document.getElementById("day-view");
         const monthView = document.getElementById("month-view");
         const toggleViewButton = document.getElementById("toggle-view");
@@ -200,7 +201,6 @@
         const nextDayButton = document.getElementById("next-day");
         const calendar = document.getElementById("calendar");
 
-        // Helper Functions
         function getWorkoutType(date) {
             const dayDifference = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
             return workoutSplit[dayDifference % workoutSplit.length];
@@ -237,7 +237,10 @@
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("day");
                 dayDiv.textContent = day;
-                if (workouts[dateKey]?.log) dayDiv.classList.add("completed");
+
+                if (workouts[dateKey]?.log) {
+                    dayDiv.classList.add("completed");
+                }
 
                 dayDiv.addEventListener("click", () => {
                     currentDate = date;
@@ -262,7 +265,6 @@
             }
         }
 
-        // Event Listeners
         dayLog.addEventListener("input", saveWorkoutLog);
         prevDayButton.addEventListener("click", () => {
             currentDate.setDate(currentDate.getDate() - 1);
@@ -274,7 +276,6 @@
         });
         toggleViewButton.addEventListener("click", toggleView);
 
-        // Initialize
         updateDayView();
     </script>
 </body>
