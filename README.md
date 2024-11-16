@@ -3,216 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Calendar</title>
+    <title>Workout Tracker</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
         }
 
-        .calendar-container {
+        .container {
+            max-width: 800px;
             margin: 20px auto;
-            max-width: 1000px;
-            background: white;
             padding: 20px;
+            background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .month-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header {
+            text-align: center;
             margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .month-header button {
-            background: none;
+        .header h1 {
+            font-size: 2em;
+            color: #4CAF50;
+        }
+
+        .day-view, .month-view {
+            display: none;
+        }
+
+        .day-view.active, .month-view.active {
+            display: block;
+        }
+
+        .day-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .day-details h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .day-details p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .day-log textarea {
+            width: 100%;
+            height: 150px;
+            font-size: 1em;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .day-log textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .navigation-buttons button {
+            padding: 10px 20px;
             border: none;
+            background-color: #4CAF50;
             color: white;
-            font-size: 1.5em;
+            font-size: 1em;
+            border-radius: 5px;
             cursor: pointer;
         }
 
-        .month-header button:hover {
-            text-decoration: underline;
+        .navigation-buttons button:hover {
+            background-color: #45a049;
         }
 
-        .month-title {
-            font-size: 1.8em;
+        .view-toggle {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .calendar {
+        .view-toggle button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .view-toggle button:hover {
+            background-color: #0056b3;
+        }
+
+        .month-view .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             margin-top: 20px;
         }
 
-        .day {
-            position: relative;
+        .month-view .calendar .day {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #ffffff;
-            text-align: left;
+            text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .day:hover {
-            background-color: #f9f9f9;
             cursor: pointer;
         }
 
-        .day.completed {
+        .month-view .calendar .day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .month-view .calendar .day.completed {
             background-color: #4CAF50;
             color: white;
-        }
-
-        .day.completed:hover {
-            background-color: #45a049;
-        }
-
-        .day .date {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 5px;
-        }
-
-        .day textarea {
-            width: 100%;
-            height: 60px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.9em;
-            padding: 5px;
-            resize: none;
-        }
-
-        .day textarea:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        .instructions {
-            margin-bottom: 20px;
-            color: #555;
-            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
-    <div class="calendar-container">
-        <div class="month-header">
-            <button id="prev-month">◀</button>
-            <div id="month-title"></div>
-            <button id="next-month">▶</button>
+    <div class="container">
+        <div class="header">
+            <h1>Workout Tracker</h1>
         </div>
-        <div class="instructions">Click a day to add notes or mark it as completed. Use the arrows to navigate months.</div>
-        <div class="calendar" id="calendar"></div>
+
+        <div class="day-view active" id="day-view">
+            <div class="day-details">
+                <h2 id="day-title"></h2>
+                <p id="workout-type"></p>
+            </div>
+            <div class="day-log">
+                <textarea id="day-log" placeholder="Write about your workout today..."></textarea>
+            </div>
+            <div class="navigation-buttons">
+                <button id="prev-day">Previous Day</button>
+                <button id="next-day">Next Day</button>
+            </div>
+        </div>
+
+        <div class="month-view" id="month-view">
+            <div class="calendar" id="calendar"></div>
+        </div>
+
+        <div class="view-toggle">
+            <button id="toggle-view">Switch to Month View</button>
+        </div>
     </div>
 
     <script>
-        const workoutSplit = ["Push", "Pull", "Legs 1", "Cardio and Abs", "Upperbody", "Legs 2", "Rest"];
+        // Constants
+        const workoutSplit = ["Push", "Pull", "Legs", "Cardio and Abs", "Upperbody", "Rest", "Rest"];
+        const startDate = new Date(2024, 10, 18); // November 18, 2024
+        const endDate = new Date(2026, 10, 17); // 2 years later
+
+        // State
+        let currentDate = startDate;
+        let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
+
+        // Elements
+        const dayView = document.getElementById("day-view");
+        const monthView = document.getElementById("month-view");
+        const toggleViewButton = document.getElementById("toggle-view");
+
+        const dayTitle = document.getElementById("day-title");
+        const workoutType = document.getElementById("workout-type");
+        const dayLog = document.getElementById("day-log");
+
+        const prevDayButton = document.getElementById("prev-day");
+        const nextDayButton = document.getElementById("next-day");
         const calendar = document.getElementById("calendar");
-        const monthTitle = document.getElementById("month-title");
-        const prevMonthButton = document.getElementById("prev-month");
-        const nextMonthButton = document.getElementById("next-month");
 
-        let currentDate = new Date(2024, 10, 18); // Start from November 18, 2024
-        let workouts = JSON.parse(localStorage.getItem('workouts')) || {};
+        // Helper Functions
+        function getWorkoutType(date) {
+            const dayDifference = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
+            return workoutSplit[dayDifference % workoutSplit.length];
+        }
 
-        // Generate the calendar for the current month
-        function generateCalendar(year, month) {
+        function formatDate(date) {
+            return date.toISOString().split("T")[0];
+        }
+
+        function updateDayView() {
+            const dateKey = formatDate(currentDate);
+            dayTitle.textContent = currentDate.toDateString();
+            workoutType.textContent = getWorkoutType(currentDate);
+            dayLog.value = workouts[dateKey]?.log || "";
+        }
+
+        function saveWorkoutLog() {
+            const dateKey = formatDate(currentDate);
+            workouts[dateKey] = workouts[dateKey] || {};
+            workouts[dateKey].log = dayLog.value;
+            localStorage.setItem("workouts", JSON.stringify(workouts));
+        }
+
+        function updateMonthView() {
             calendar.innerHTML = "";
-            const firstDay = new Date(year, month, 1).getDay();
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
-            monthTitle.textContent = `${monthName} ${year}`;
 
-            // Fill in empty days for alignment
-            for (let i = 0; i < firstDay; i++) {
-                const emptyDiv = document.createElement("div");
-                calendar.appendChild(emptyDiv);
-            }
-
-            // Generate days
-            let workoutIndex = month === 10 && year === 2024 ? 0 : null; // Start workout split only from Nov 18
             for (let day = 1; day <= daysInMonth; day++) {
-                const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                const date = new Date(year, month, day);
+                const dateKey = formatDate(date);
+
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("day");
-                dayDiv.dataset.date = dateKey;
+                dayDiv.textContent = day;
+                if (workouts[dateKey]?.log) dayDiv.classList.add("completed");
 
-                // Workout starts from November 18
-                if (year === 2024 && month === 10 && day >= 18) {
-                    workoutIndex = workoutIndex === null ? 0 : workoutIndex; // Start split from "Push"
-                } else if (workoutIndex !== null) {
-                    workoutIndex++;
-                }
-
-                // Header with date and workout split
-                const dateDiv = document.createElement("div");
-                dateDiv.classList.add("date");
-                const workoutName = workoutIndex !== null ? workoutSplit[workoutIndex % workoutSplit.length] : '';
-                dateDiv.textContent = `${day} ${workoutName ? '- ' + workoutName : ''}`;
-                dayDiv.appendChild(dateDiv);
-
-                // Text area for workout log
-                const textArea = document.createElement("textarea");
-                textArea.value = workouts[dateKey]?.log || '';
-                textArea.addEventListener("input", () => {
-                    workouts[dateKey] = workouts[dateKey] || {};
-                    workouts[dateKey].log = textArea.value;
-                    saveWorkouts();
-                });
-                dayDiv.appendChild(textArea);
-
-                // Click event to mark as completed
                 dayDiv.addEventListener("click", () => {
-                    dayDiv.classList.toggle("completed");
-                    workouts[dateKey] = workouts[dateKey] || {};
-                    workouts[dateKey].completed = dayDiv.classList.contains("completed");
-                    saveWorkouts();
+                    currentDate = date;
+                    updateDayView();
+                    toggleView();
                 });
-
-                // Mark as completed if already done
-                if (workouts[dateKey]?.completed) {
-                    dayDiv.classList.add("completed");
-                }
 
                 calendar.appendChild(dayDiv);
             }
         }
 
-        // Save workouts to local storage
-        function saveWorkouts() {
-            localStorage.setItem('workouts', JSON.stringify(workouts));
+        function toggleView() {
+            if (dayView.classList.contains("active")) {
+                dayView.classList.remove("active");
+                monthView.classList.add("active");
+                toggleViewButton.textContent = "Switch to Day View";
+                updateMonthView();
+            } else {
+                dayView.classList.add("active");
+                monthView.classList.remove("active");
+                toggleViewButton.textContent = "Switch to Month View";
+            }
         }
 
-        // Navigate to the previous month
-        prevMonthButton.addEventListener("click", () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        // Event Listeners
+        dayLog.addEventListener("input", saveWorkoutLog);
+        prevDayButton.addEventListener("click", () => {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDayView();
         });
-
-        // Navigate to the next month
-        nextMonthButton.addEventListener("click", () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        nextDayButton.addEventListener("click", () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDayView();
         });
+        toggleViewButton.addEventListener("click", toggleView);
 
-        // Initialize the calendar
-        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        // Initialize
+        updateDayView();
     </script>
 </body>
 </html>
