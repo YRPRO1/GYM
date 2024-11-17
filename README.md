@@ -149,22 +149,17 @@
                 <button id="next-day">Next Day</button>
             </div>
         </div>
-
-        <div class="view-toggle">
-            <button id="toggle-view">Switch to Month View</button>
-        </div>
     </div>
 
     <script>
-        // Constants
         const workoutPlan = [
-            "Push (Chest/Triceps/Shoulders)",
-            "Pull (Back/Biceps)",
-            "Legs & Abs",
-            "Upper Body (Chest/Back/Shoulders & Arms)",
-            "Lower Body (Legs & Cardio)",
-            "Rest",
-            "Rest"
+            "Rest",                          // Sunday
+            "Push (Chest/Triceps/Shoulders)", // Monday
+            "Pull (Back/Biceps)",            // Tuesday
+            "Legs & Abs",                    // Wednesday
+            "Upper Body (Chest/Back/Shoulders & Arms)", // Thursday
+            "Lower Body (Legs & Cardio)",    // Friday
+            "Rest"                           // Saturday
         ];
 
         const startDate = new Date(2024, 10, 18); // November 18, 2024
@@ -178,12 +173,12 @@
         const dayLog = document.getElementById("day-log");
         const prevDayButton = document.getElementById("prev-day");
         const nextDayButton = document.getElementById("next-day");
-        const toggleViewButton = document.getElementById("toggle-view");
 
         // Helper Functions
         function getWorkoutType(date) {
-            const dayDifference = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
-            return workoutPlan[dayDifference % workoutPlan.length];
+            // Get the day of the week (0 = Sunday, 1 = Monday, ... 6 = Saturday)
+            const dayOfWeek = date.getDay();
+            return workoutPlan[dayOfWeek];
         }
 
         function formatDate(date) {
@@ -193,7 +188,7 @@
         function updateDayView() {
             const dateKey = formatDate(currentDate);
             dayTitle.textContent = currentDate.toDateString();
-            workoutType.textContent = getWorkoutType(currentDate);
+            workoutType.textContent = getWorkoutType(currentDate); // Correctly map the workout plan to the day of the week
             dayLog.value = workouts[dateKey]?.log || "";
         }
 
