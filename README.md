@@ -39,12 +39,16 @@
             margin: 0;
         }
 
-        .day-view {
+        .day-view, .month-view {
             flex: 1;
             overflow-y: auto;
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: space-between;
+        }
+
+        .day-view.active, .month-view.active {
+            display: flex;
         }
 
         .day-details {
@@ -117,6 +121,32 @@
             background-color: #0056b3;
         }
 
+        .month-view .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .month-view .calendar .day {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #ffffff;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .month-view .calendar .day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .month-view .calendar .day.completed {
+            background-color: #4CAF50;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             .day-log textarea {
                 height: 150px;
@@ -136,7 +166,7 @@
             <h1>Workout Tracker</h1>
         </div>
 
-        <div class="day-view" id="day-view">
+        <div class="day-view active" id="day-view">
             <div class="day-details">
                 <h2 id="day-title"></h2>
                 <p id="workout-type"></p>
@@ -148,6 +178,14 @@
                 <button id="prev-day">Previous Day</button>
                 <button id="next-day">Next Day</button>
             </div>
+        </div>
+
+        <div class="month-view" id="month-view">
+            <div class="calendar" id="calendar"></div>
+        </div>
+
+        <div class="view-toggle">
+            <button id="toggle-view">Switch to Month View</button>
         </div>
     </div>
 
@@ -168,15 +206,18 @@
         let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
 
         // Elements
+        const dayView = document.getElementById("day-view");
+        const monthView = document.getElementById("month-view");
         const dayTitle = document.getElementById("day-title");
         const workoutType = document.getElementById("workout-type");
         const dayLog = document.getElementById("day-log");
         const prevDayButton = document.getElementById("prev-day");
         const nextDayButton = document.getElementById("next-day");
+        const toggleViewButton = document.getElementById("toggle-view");
+        const calendar = document.getElementById("calendar");
 
         // Helper Functions
         function getWorkoutType(date) {
-            // Get the day of the week (0 = Sunday, 1 = Monday, ... 6 = Saturday)
             const dayOfWeek = date.getDay();
             return workoutPlan[dayOfWeek];
         }
@@ -188,7 +229,7 @@
         function updateDayView() {
             const dateKey = formatDate(currentDate);
             dayTitle.textContent = currentDate.toDateString();
-            workoutType.textContent = getWorkoutType(currentDate); // Correctly map the workout plan to the day of the week
+            workoutType.textContent = getWorkoutType(currentDate);
             dayLog.value = workouts[dateKey]?.log || "";
         }
 
@@ -201,18 +242,55 @@
 
         function switchDay(offset) {
             currentDate.setDate(currentDate.getDate() + offset);
-
-            // Prevent navigating before start or after end
             if (currentDate < startDate) currentDate = startDate;
             if (currentDate > endDate) currentDate = endDate;
-
             updateDayView();
+        }
+
+        function updateMonthView() {
+            calendar.innerHTML = "";
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateKey = formatDate(date);
+
+                const dayDiv = document.createElement("div");
+                dayDiv.classList.add("day");
+                dayDiv.textContent = day;
+
+                if (workouts[dateKey]?.log) dayDiv.classList.add("completed");
+
+                dayDiv.addEventListener("click", () => {
+                    currentDate = date;
+                    toggleView();
+                    updateDayView();
+                });
+
+                calendar.appendChild(dayDiv);
+            }
+        }
+
+        function toggleView() {
+            if (dayView.classList.contains("active")) {
+                dayView.classList.remove("active");
+                monthView.classList.add("active");
+                toggleViewButton.textContent = "Switch to Day View";
+                updateMonthView();
+            } else {
+                monthView.classList.remove("active");
+                dayView.classList.add("active");
+                toggleViewButton.textContent = "Switch to Month View";
+            }
         }
 
         // Event Listeners
         dayLog.addEventListener("input", saveWorkoutLog);
         prevDayButton.addEventListener("click", () => switchDay(-1));
         nextDayButton.addEventListener("click", () => switchDay(1));
+        toggleViewButton.addEventListener("click", toggleView);
 
         // Initialize
         updateDayView();
