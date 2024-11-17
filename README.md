@@ -57,20 +57,21 @@
         }
 
         .day-details h2 {
-            font-size: 1.2em;
+            font-size: 1.5em;
             margin-bottom: 10px;
         }
 
         .day-details p {
-            font-size: 1em;
+            font-size: 1.2em;
             color: #555;
         }
 
         .day-log textarea {
             width: 100%;
-            height: 200px;
-            font-size: 1em;
-            padding: 10px;
+            height: 250px;
+            font-size: 1.1em;
+            padding: 15px;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             resize: none;
@@ -85,11 +86,11 @@
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
+            margin: 20px 0;
         }
 
         .navigation-buttons button {
-            padding: 10px 15px;
+            padding: 15px 25px;
             border: none;
             background-color: #4CAF50;
             color: white;
@@ -108,7 +109,7 @@
         }
 
         .view-toggle button {
-            padding: 10px 15px;
+            padding: 15px 25px;
             border: none;
             background-color: #007BFF;
             color: white;
@@ -149,12 +150,12 @@
 
         @media (max-width: 600px) {
             .day-log textarea {
-                height: 150px;
+                height: 200px;
             }
 
             .navigation-buttons button,
             .view-toggle button {
-                padding: 10px 10px;
+                padding: 10px 15px;
                 font-size: 0.9em;
             }
         }
@@ -205,7 +206,6 @@
         let currentDate = startDate;
         let workouts = JSON.parse(localStorage.getItem("workouts")) || {};
 
-        // Elements
         const dayView = document.getElementById("day-view");
         const monthView = document.getElementById("month-view");
         const dayTitle = document.getElementById("day-title");
@@ -216,7 +216,6 @@
         const toggleViewButton = document.getElementById("toggle-view");
         const calendar = document.getElementById("calendar");
 
-        // Helper Functions
         function getWorkoutType(date) {
             const dayOfWeek = date.getDay();
             return workoutPlan[dayOfWeek];
@@ -286,13 +285,11 @@
             }
         }
 
-        // Event Listeners
         dayLog.addEventListener("input", saveWorkoutLog);
         prevDayButton.addEventListener("click", () => switchDay(-1));
         nextDayButton.addEventListener("click", () => switchDay(1));
         toggleViewButton.addEventListener("click", toggleView);
 
-        // Initialize
         updateDayView();
     </script>
 </body>
